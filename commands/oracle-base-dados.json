@@ -1,0 +1,220 @@
+{
+    "Commands": [
+        {
+            "dbType": "oracle",
+            "query" : "SELECT name as dg, USABLE_FILE_MB*1024*1024 from v$asm_diskgroup where name not like '%STAGE%'",
+            "metricFamilyName" : "OracleAsmFree",
+            "metricFamilyDesc" : "Free Bytes in ASM DG",
+            "speed" : "asm",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query" : "SELECT name as dg, (total_mb-(free_mb+required_mirror_free_mb))*1024*1024 from v$asm_diskgroup where name not like '%STAGE%'",
+            "metricFamilyName" : "OracleAsmUsed",
+            "metricFamilyDesc" : "Used Bytes in ASM DG",
+            "speed" : "off",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query" : "SELECT name as dg, ((TOTAL_MB - REQUIRED_MIRROR_FREE_MB) /decode(type,'NORMAL',2,'HIGH',3,1)) * 1024 * 1024 from v$asm_diskgroup where name not like '%STAGE%'",
+            "metricFamilyName" : "OracleAsmTotal",
+            "metricFamilyDesc" : "Total bytes in ASM DG",
+            "speed" : "asm",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT if_code as if_code, TO_CHAR(timestamp, 'DD-MON-YYYY HH24:MI:SS') as time_stamp, (CASE WHEN status = 'PD' THEN 1 WHEN status = 'PG' THEN 2 WHEN status = 'ER' THEN 3 WHEN status = 'XX' THEN 4 WHEN status = 'RD' THEN 5 ELSE 0 END) FROM  FOZ_SAN.CONTROLE_CONECTOR",
+            "metricFamilyName" : "StatusConector",
+            "metricFamilyDesc" : "Status Dos Conectores",
+            "speed" : "off",
+            "oneInstQuery": true
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT COUNT(1) FROM FOZ_SAN.CONTROLE_TRANSACAO WHERE IF_CODE =  'CLIENTE_EXP' AND STATUS = 'PG'",
+            "metricFamilyName" : "ContadorStatusPG",
+            "metricFamilyDesc" : "Contador Dos Conectores Com Status PG",
+            "speed" : "off",
+            "oneInstQuery": true
+        },
+        {
+            "dbType": "oracle",
+            "query": "select username as username, count(*) from v$session_longops b where username not in ('DBSNMP','SYS','SYSMAN','MONTD_OBSERVABILITY') group by username",
+            "metricFamilyName": "OracleSessLongOps",
+            "metricFamilyDesc": "Count of session executing long operations(excluded users DBSNMP, SYS, SYSMAN, MONTD_OBSERVABILITY)",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select (sysdate - STARTUP_TIME) * 24 * 60 *60  || '\n' from v$instance",
+            "metricFamilyName": "OracleUptime",
+            "metricFamilyDesc": "Uptime of instance",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select STATUS as status, count(*) from v$session where TYPE != 'BACKGROUND' group by STATUS",
+            "metricFamilyName": "OracleSessState",
+            "metricFamilyDesc": "Count of sessions by status",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select NAME as parameter, replace(VALUE,',','.') from v$parameter WHERE NAME IN ('processes', 'sessions','cpu_count', 'cpu_min_count', 'sga_max_size', 'shared_pool_size', 'large_pool_size', 'java_pool_size', 'streams_pool_size', 'shared_pool_reserved_size', 'java_soft_sessionspace_limit', 'java_max_sessionspace_size', 'pga_aggregate_limit', 'max_datapump_jobs_per_pdb', 'max_datapump_parallel_per_job', 'sga_target', 'memory_target', 'memory_max_target', 'control_file_record_keep_time', 'db_block_size', 'db_writer_processes', 'data_guard_max_io_time', 'data_guard_max_longio_time', 'log_archive_max_processes', 'log_buffer', 'log_checkpoint_interval', 'log_checkpoint_timeout', 'db_files', 'cluster_database_instances', 'db_recovery_file_dest_size', 'db_flashback_retention_target', 'dml_locks', 'transactions', 'transactions_per_rollback_segment', 'undo_retention', 'unified_audit_sga_queue_size', 'session_cached_cursors', 'parallel_min_servers', 'parallel_max_servers', 'parallel_execution_message_size', 'hash_area_size', 'open_cursors', 'pga_aggregate_target', 'parallel_servers_target', 'parallel_min_degree')",
+            "metricFamilyName": "OracleParameters",
+            "metricFamilyDesc": "Parameters of instance",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select sum(case when first_time > SYSDATE-5/60/24 then 1 else 0 end) || '\n' from v$log_history",
+            "metricFamilyName": "OracleRedoSW",
+            "metricFamilyDesc": "Count of Redo Switch",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select username as username, sum(case when ((sysdate - SQL_EXEC_START) * 24) > 2 then 1 else 0 end) from v$session where username not in ('DBSNMP','SYS','SYSMAN','SRV_MONIT') group by username",
+            "metricFamilyName": "OracleLongSession",
+            "metricFamilyDesc": "Count of sessions with more 2h (excluded users DBSNMP, SYS, SYSMAN, MONTD_OBSERVABILITY)",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select  NAME as fra_path, SPACE_LIMIT from v$recovery_file_dest",
+            "metricFamilyName": "OracleFraTotal",
+            "metricFamilyDesc": "Total Space bytes in Fast Recovery Area",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select NAME as fra_path, (SPACE_USED - SPACE_RECLAIMABLE) from v$recovery_file_dest",
+            "metricFamilyName": "OracleFraUsed",
+            "metricFamilyDesc": "Used Space bytes in Fast Recovery Area",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select sum(bytes) from dba_segments",
+            "metricFamilyName": "OracleDbSize",
+            "metricFamilyDesc": "Total size bytes of database",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select  sum(bytes) from dba_data_files",
+            "metricFamilyName": "OracleDbAlloc",
+            "metricFamilyDesc": "Total allocated bytes of database",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select count(*) from dba_objects where status = 'INVALID' and object_type not in ('MATERIALIZED VIEW','SYNONYM')",
+            "metricFamilyName": "OracleInvalidObj",
+            "metricFamilyDesc": "Total objects invalid",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select count(*) from dba_registry where status = 'INVALID'",
+            "metricFamilyName": "OracleInvalidComp",
+            "metricFamilyDesc": "Total components invalid",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT TABLESPACE_NAME as tablespace, SUM(BYTES) FROM DBA_DATA_FILES WHERE TABLESPACE_NAME NOT LIKE '%TEMP%' GROUP BY TABLESPACE_NAME",
+            "metricFamilyName": "OracleTbsSizeBytes",
+            "metricFamilyDesc": "Oracle size of tablespaces in bytes",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT TABLESPACE_NAME as tablespace, SUM(CASE AUTOEXTENSIBLE WHEN 'YES' THEN MAXBYTES ELSE BYTES END) FROM DBA_DATA_FILES WHERE TABLESPACE_NAME NOT LIKE '%TEMP%' GROUP BY TABLESPACE_NAME",
+            "metricFamilyName": "OracleTbsAllocBytes",
+            "metricFamilyDesc": "Oracle allocated bytes of tablespaces",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT t.tablespace_name as tablespace, tum.used_space*t.block_size FROM dba_tablespaces t INNER JOIN dba_tablespace_usage_metrics tum ON t.tablespace_name = tum.tablespace_name WHERE t.contents = 'PERMANENT'",
+            "metricFamilyName": "OracleTbsUsedBytes",
+            "metricFamilyDesc": "Oracle Used bytes in tablespaces",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT TABLESPACE_NAME as tablespace, STATUS as status, SUM(BYTES) FROM DBA_UNDO_EXTENTS GROUP BY TABLESPACE_NAME, STATUS",
+            "metricFamilyName": "OracleUndoTbsUsedBytes",
+            "metricFamilyDesc": "Oracle Used bytes in undo tablespaces",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT TABLESPACE_NAME as tablespace, TABLESPACE_SIZE FROM DBA_TEMP_FREE_SPACE",
+            "metricFamilyName": "OracleTempTbsTotalBytes",
+            "metricFamilyDesc": "Oracle Total bytes in temp tablespaces",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT TABLESPACE_NAME as tablespace, FREE_SPACE FROM DBA_TEMP_FREE_SPACE",
+            "metricFamilyName": "OracleTempTbsFreeBytes",
+            "metricFamilyDesc": "Oracle free bytes in temp tablespaces",
+            "speed": "slow",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select wait_class ||','|| replace(aas,',','.') || '\n' from (select n.wait_class, round(m.time_waited/m.INTSIZE_CSEC,3) AAS from v$waitclassmetric  m, v$system_wait_class n where m.wait_class_id=n.wait_class_id and n.wait_class != 'Idle' union select  'CPU', round(value/100,3) AAS from v$sysmetric where metric_name='CPU Usage Per Sec' and group_id=2 union select 'CPU_OS', round((prcnt.busy*parameter.cpu_count)/100,3) - aas.cpu from ( select value busy from v$sysmetric where metric_name='Host CPU Utilization (%)' and group_id=2 ) prcnt, ( select value cpu_count from v$parameter where name='cpu_count' )  parameter, ( select  'CPU', round(value/100,3) cpu from v$sysmetric where metric_name='CPU Usage Per Sec' and group_id=2) aas)",
+            "metricFamilyName" : "OracleWaitEvents",
+            "metricFamilyDesc" : "Oracle Wait Events",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "select to_char(round(value/100,3),'99.99') || '\n' from v$sysmetric where metric_name='Host CPU Usage Per Sec'  and group_id=2",
+            "metricFamilyName" : "OracleCPUHostUsage",
+            "metricFamilyDesc" : "Oracle Host use CPU",
+            "speed": "normal",
+            "oneInstQuery": true
+        },
+        {
+            "dbType": "oracle",
+            "query": "select to_char(round(value/100,3),'99.99') || '\n'  from v$sysmetric where metric_name='CPU Usage Per Sec' and group_id=2",
+            "metricFamilyName" : "OracleCPUInstUsage",
+            "metricFamilyDesc" : "Oracle Inst use CPU",
+            "speed": "normal",
+            "oneInstQuery": false
+        },
+        {
+            "dbType": "oracle",
+            "query": "SELECT rn AS rn, sql_id AS sql_id, elapsed_sec AS elapsed_sec, cpu_sec AS cpu_sec, executions AS executions, 1 FROM( SELECT ROW_NUMBER() OVER (ORDER BY sum(dhs.elapsed_time_delta) DESC) rn, dhs.sql_id sql_id, round(sum(dhs.elapsed_time_delta) / 1000000) elapsed_sec, round(sum(dhs.cpu_time_delta) / 1000000) cpu_sec, sum(dhs.executions_delta) executions FROM dba_hist_sqlstat dhs JOIN dba_hist_snapshot sh ON dhs.snap_id = sh.snap_id WHERE sh.begin_interval_time >= trunc(sysdate - 12 / 24) GROUP BY dhs.sql_id) x WHERE x.rn <= 10",
+            "metricFamilyName" : "OracleOffensiveQueries",
+            "metricFamilyDesc" : "ranking of most offensive queries",
+            "speed": "slow-12h",
+            "oneInstQuery": false
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+services:
+  go-kollector:
+    build: .
+    tty: true
+    stdin_open: true
+    container_name: "Go-Kollector"
+    image: go-kollector-mysql:latest
+    environment:
+      BT_API_URL: "${BT_API_URL}"
+      BT_API_KEY: "${BT_API_KEY}"
+      BT_RUNAS: "${BT_RUNAS}"
+    volumes:
+      - ./KollectorSettings.yml:/app/KollectorSettings.yml
+      - ./commands/:/app/commands/
+      - ./config/:/app/config/
+    ports:
+      - 42000:42000
+    deploy:
+    #resources:
+    #limits:
+    #cpus: '3.0' # Limita o uso a 100% de um núcleo #cpus: '3.0' # Limita o uso a 300% de um núcleo
+    #memory: 10224M
+      restart_policy:
+        condition: none
