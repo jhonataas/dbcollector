@@ -1,24 +1,28 @@
+version: '3.8'
+
 services:
-  go-kollector:
+  db-collector:
     build: .
-    tty: true
-    stdin_open: true
-    container_name: "Go-Kollector"
-    image: go-kollector-mysql:latest
-    environment:
-      BT_API_URL: "${BT_API_URL}"
-      BT_API_KEY: "${BT_API_KEY}"
-      BT_RUNAS: "${BT_RUNAS}"
-    volumes:
-      - ./KollectorSettings.yml:/app/KollectorSettings.yml
-      - ./commands/:/app/commands/
-      - ./config/:/app/config/
+    container_name: db-collector
+    restart: unless-stopped
     ports:
-      - 42000:42000
-    deploy:
-    #resources:
-    #limits:
-    #cpus: '3.0' # Limita o uso a 100% de um núcleo #cpus: '3.0' # Limita o uso a 300% de um núcleo
-    #memory: 10224M
-      restart_policy:
-        condition: none
+      - "42000:42000"
+    environment:
+      - BT_CLIENT_SECRET=${BT_CLIENT_SECRET}
+      - BT_CLIENT_ID=${BT_CLIENT_ID}
+      - BT_API_URL=${BT_API_URL}
+      - LOCAL_PASS=${LOCAL_PASS}
+      - LOCAL_USER="${LOCAL_USER}"
+      # Define o fuso horário para os logs e intervalos de query
+      - TZ=America/Sao_Paulo
+    volumes:
+      # MAPEAMENTO DE VOLUME:
+      # Isso permite que você edite os YAMLs na sua máquina e o container 
+      # leia as mudanças sem precisar de um novo "docker build".
+      - ./config:/root/config:ro
+    networks:
+      - monitoramento_network
+
+networks:
+  monitoramento_network:
+    driver: bridge

@@ -1,0 +1,19 @@
+targets:
+  # Exemplo 1: Banco de Produção usando BeyondTrust
+  - name: "oracle-erp-prod"
+    driver: "oracle"
+    host: "10.0.1.50:1521"
+    database: "PROD_ERP"
+    # O auth_ref abaixo é o ID que sua API do BeyondTrust 
+    # usa para identificar esta conta específica.
+    auth_ref: "BT_ACCOUNT_ID_9982" 
+    tags: ["critico", "oracle_all"]
+
+  # Exemplo 2: Banco de Homologação usando senha manual
+  - name: "sqlserver-homolog"
+    driver: "sqlserver"
+    host: "10.0.1.60:1433"
+    database: "HOMOLOG_DB"
+    # Referencia o ID que criamos em 'local_credentials' no global.yaml
+    auth_ref: "acesso_manual_dev"
+    tags: ["homolog", "sql_all"]

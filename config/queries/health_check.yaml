@@ -1,0 +1,9 @@
+queries:
+  - name: "check_alive"
+    description: "Query simples para garantir que o engine está processando"
+    interval: "1m"
+    target_tags: ["prod", "homolog"]
+    # No Oracle pode ser 'SELECT 1 FROM DUAL'
+    # No SQL Server/Postgres/MySQL pode ser 'SELECT 1'
+    # Como você quer labels, vamos retornar o nome do servidor
+    sql: "SELECT @@SERVERNAME as server, 1 as value"

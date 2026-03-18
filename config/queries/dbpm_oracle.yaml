@@ -1,0 +1,5 @@
+queries:
+  - name: "db_sessions_by_status"
+    interval: "1m"
+    target_tags: ["oracle_all"]
+    sql: "SELECT status, count(*) FROM v$session GROUP BY status"
