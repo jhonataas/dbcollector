@@ -2,17 +2,12 @@ server_port: "42000"
 log_level: "info"
 
 auth:
-  # Definimos o método padrão como 'beyondtrust'
   method: "beyondtrust"
-  cache_ttl: "30m" # Evita onerar o cofre em cada coleta
-  
+  cache_ttl: "30m"
   beyondtrust:
     api_url: "${BT_API_URL}"
     client_id: "${BT_CLIENT_ID}"
-    # O valor abaixo será lido da variável de ambiente do Sistema/Docker
     client_secret: "${BT_CLIENT_SECRET}"
-
-  # Fallback para bancos que ainda não estão no cofre
   local_credentials:
     - id: "acesso_manual_dev"
       user: "${LOCAL_USER}"
